@@ -181,7 +181,7 @@ module.exports = {
         "navbar-menu": "rgba(16, 16, 18, 0.6)",
         "dark-1": "#FFFFFF",
         "dark-2": "#A3D2E6",
-        "dark-3": "#101012",
+        "dark-3": "#000000",
         "dark-4": "#1F1F22",
         "light-1": "#FFFFFF",
         "light-2": "#EFEFEF",
