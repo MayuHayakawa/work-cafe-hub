@@ -26,6 +26,9 @@ interface Props {
   id: string;
   currentUserId: string;
   cafeName: string;
+  cafeUrl: string;
+  cafeLocation: string;
+  cafeImage: string;
   wifi: string;
   bathroom: string;
   outlet: string;
@@ -60,6 +63,9 @@ const PostCard = ({
   id,
   currentUserId,
   cafeName,
+  cafeUrl,
+  cafeLocation,
+  cafeImage,
   wifi,
   bathroom,
   outlet,
@@ -69,12 +75,14 @@ const PostCard = ({
   createdAt
 }: Props) => {
   const [expanded, setExpanded] = React.useState(false);
+  const postDate = createdAt.toString();
+  const fallbackImage = "/assets/cafe-stand.svg"
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const postDate = createdAt.toString();
+  console.log(cafeImage);
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -102,7 +110,8 @@ const PostCard = ({
       <CardMedia
         component="img"
         height="194"
-        image="/static/images/cards/paella.jpg"
+        src={cafeImage !== '' ? cafeImage : fallbackImage}
+        // image={cafeImage !== '' ? '' : fallbackImage}
         alt={cafeName}
       />
       <CardContent>

@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "../ui/textarea";
 
-import { updateUser } from "@/lib/actions/user.actions";
 import { PostValidation } from "@/lib/validations/post";
 import { createPost } from "@/lib/actions/post.actions";
 import { ChangeEvent, useState } from "react";
@@ -54,19 +53,21 @@ function PostComment({ userId }: Props) {
   })
 
   const onSubmit = async (values: z.infer<typeof PostValidation>) => {
-    const blob = values.cafeImage;
-
-    const hasImageChanged = isBase64Image(blob);
-
-    if(hasImageChanged) {
-      const imgRes =  await startUpload(files);
-
-      if(imgRes && imgRes[0].fileUrl) {
-        values.cafeImage = imgRes[0].fileUrl;
+    if(values.cafeImage != undefined) {
+      const blob = values.cafeImage;
+  
+      const hasImageChanged = isBase64Image(blob);
+  
+      if(hasImageChanged) {
+        const imgRes =  await startUpload(files);
+  
+        if(imgRes && imgRes[0].fileUrl) {
+          values.cafeImage = imgRes[0].fileUrl;
+        }
+        // if(imgRes && imgRes[0].url) {
+        //   values.profile_photo = imgRes[0].url;
+        // }
       }
-      // if(imgRes && imgRes[0].url) {
-      //   values.profile_photo = imgRes[0].url;
-      // }
     }
 
     await createPost({

@@ -8,13 +8,13 @@ import User from "../models/user.model";
 
 interface Params {
   cafeName: string,
-  cafeUrl: string,
-  cafeLocation: string,
-  cafeImage: string,
+  cafeUrl: string | undefined,
+  cafeLocation: string | undefined,
+  cafeImage: string | undefined,
   wifi: string,
   bathroom: string,
   outlet: string,
-  comment: string,
+  comment: string | null,
   author: string,
   path: string
 }

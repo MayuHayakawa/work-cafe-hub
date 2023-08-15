@@ -23,6 +23,9 @@ export default async function Home() {
                 id={post._id}
                 currentUserId={user?.id || ''}
                 cafeName={post.cafeName}
+                cafeUrl={post.cafeUrl}
+                cafeLocation={post.cafeLocation}
+                cafeImage={post.cafeImage}
                 wifi={post.wifi}
                 bathroom={post.bathroom}
                 outlet={post.outlet}
