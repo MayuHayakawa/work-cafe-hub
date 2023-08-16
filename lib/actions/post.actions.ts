@@ -6,7 +6,7 @@ import { connectToDB } from "../mongoose";
 import Post from "../models/post.model";
 import User from "../models/user.model";
 
-interface Params {
+interface CreatePostParams {
   cafeName: string,
   cafeUrl: string | undefined,
   cafeLocation: string | undefined,
@@ -17,6 +17,11 @@ interface Params {
   comment: string | null,
   author: string,
   path: string
+}
+
+interface GoodToPostParams {
+  id: string,
+  currentUserId: string,
 }
 
 export async function fetchPosts(pageNumber = 1, pageSize = 6) {
@@ -50,7 +55,7 @@ export async function createPost({
   comment,
   author,
   path
-}: Params) {
+}: CreatePostParams) {
   try{
     connectToDB();
 
@@ -74,6 +79,37 @@ export async function createPost({
     revalidatePath(path);
   } catch(error: any) {
     throw new Error(`Error creating post: ${error.message}`);
+  }
+}
+
+export async function goodToPost({
+  id,
+  currentUserId,
+}: GoodToPostParams) {
+  try{
+    connectToDB();
+
+    // Check if the user have gooded it, if not, add it to the good list, if so remove it from the list.
+    const post = await Post.findById(id);
+    const user = await User.findById(currentUserId);
+
+    if(!post.good.includes(currentUserId)) {
+      await Post.findByIdAndUpdate(id, {
+        $push: { good: user._id }
+      });
+      await User.findByIdAndUpdate(currentUserId, {
+        $push: { goods: post._id}
+      });
+    } else {
+      await Post.findByIdAndUpdate(id, {
+        $pull: { good: user._id }
+      })
+      await User.findByIdAndUpdate(currentUserId, {
+        $pull: { goods: post._id}
+      });
+    }
+  } catch(error: any) {
+    throw new Error(`Error gooding post: ${error.message}`);
   }
 }
 

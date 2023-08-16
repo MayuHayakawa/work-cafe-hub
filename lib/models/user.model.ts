@@ -30,10 +30,10 @@ const userSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
-  favorites: [
+  goods: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Cafe'
+      ref: 'Post'
     }
   ],
   onboarded: {

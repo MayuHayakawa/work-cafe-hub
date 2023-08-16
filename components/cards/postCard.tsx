@@ -2,25 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { MouseEvent } from "react";
 
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MapIcon from '@mui/icons-material/Map';
+import HomeIcon from '@mui/icons-material/Home';
+import WifiIcon from '@mui/icons-material/Wifi';
+import WcIcon from '@mui/icons-material/Wc';
+import PowerIcon from '@mui/icons-material/Power';
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
+import { goodToPost } from "@/lib/actions/post.actions";
 
 interface Props {
   id: string;
@@ -38,26 +39,9 @@ interface Props {
     image: string;
     id: string;
   }
-  // good: {
-  //   author: {
-  //     name: string;
-  //     image: string;
-  //     id: string;
-  //   }
-  // }[]
+  good: []
   createdAt: string;
 }
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
 
 const PostCard = ({
   id,
@@ -71,18 +55,38 @@ const PostCard = ({
   outlet,
   comment,
   author,
-  // good,
+  good,
   createdAt
 }: Props) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const postDate = createdAt.toString();
+  const postDate = formatWithoutTimezone(createdAt);
   const fallbackImage = "/assets/cafe-stand.svg"
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  console.log(good);
 
-  console.log(cafeImage);
+  function formatWithoutTimezone(date: string) {
+    const createdAt = new Date(date);
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    };
+  
+    return createdAt.toLocaleDateString('en-US', options);
+  }
+
+  const handleClick =(
+    e: MouseEvent<HTMLInputElement>,
+  ) => {
+    e.preventDefault();
+
+    console.log(id);
+    console.log(currentUserId);
+
+    goodToPost({id:id, currentUserId: currentUserId});
+  }
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -99,59 +103,68 @@ const PostCard = ({
             </Link>
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={cafeName}
+        title={author.name}
         subheader={postDate}
       />
       <CardMedia
         component="img"
         height="194"
         src={cafeImage !== '' ? cafeImage : fallbackImage}
-        // image={cafeImage !== '' ? '' : fallbackImage}
         alt={cafeName}
       />
       <CardContent>
+        <h2>{cafeName}</h2>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+          {comment}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+      <CardActions disableSpacing className="flex justify-between justify-items-center">
+        <div>
+          {cafeUrl != '' ? (
+            <IconButton>
+              <Link href={cafeUrl}>
+                <HomeIcon color="primary" />
+              </Link>    
+            </IconButton>
+          ):(
+            <IconButton>
+              <HomeIcon />
+            </IconButton>
+          )}
+          {cafeLocation != '' ? (
+            <IconButton>
+              <Link href={cafeLocation}>
+                <MapIcon color="primary" />
+              </Link>
+            </IconButton>
+          ):(
+            <IconButton>
+              <MapIcon />
+            </IconButton>
+          )}
+        </div>
+        <div>
+          <IconButton>
+            {wifi === 'available' ? <WifiIcon color="primary" /> : <WifiIcon />}
+          </IconButton>
+          <IconButton>
+            {bathroom === 'available' ? <WcIcon color="primary" /> : <WcIcon />}
+          </IconButton>
+          <IconButton>
+            {outlet === 'available' ? <PowerIcon color="primary" /> : <PowerIcon />}
+          </IconButton>
+        </div>
+        <div>
+          <IconButton
+            aria-label="add to favorites"
+            onClick={(e: any) => handleClick(e)}
+          >
+            <FavoriteIcon />
+            <p>{good.length != 0 ? `${good.length}` : ''}</p>
+          </IconButton>
+        </div>
       </CardActions>
     </Card>
   );
-
-  // return (
-    // <article className="flex w-full flex-col rounded-xl bg-dark-2 p-7">
-    //   <div className="flex items-start justify-between">
-    //     <div className="flex w-full flex-1 flex-row gap-4">
-    //       <div className="flex flex-col items-center">
-            // <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
-            //   <Image 
-            //     src={author.image}
-            //     alt="Profile image"
-            //     fill
-            //     className="cursor-pointer rounded-full"
-            //   />
-            // </Link>
-    //       </div>
-    //     </div>
-
-    //   </div>
-    //   <h2 className="text-small-regular test-dark-1">
-    //     {cafeName}
-    //   </h2>
-    // </article>
 };
 export default PostCard;

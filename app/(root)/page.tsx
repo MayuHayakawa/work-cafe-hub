@@ -35,11 +35,7 @@ export default async function Home() {
                   image: post.author.image,
                   id: post.author.id
                 }}
-                // good={{
-                //     name: post.author.name,
-                //     image: post.author.image,
-                //     id: post.author.id,
-                // }}
+                good={post.good}
                 createdAt={post.createdAt}
               />
             )})}
