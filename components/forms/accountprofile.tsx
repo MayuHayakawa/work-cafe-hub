@@ -24,15 +24,16 @@ import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { updateUser } from "@/lib/actions/user.actions";
 
-
 interface Props {
   user: {
     id: string;
     objectId: string;
     username: string;
     name: string;
-    bio: string;
     image: string;
+    bio: string;
+    github?: string;
+    linkedin?: string;
   };
   btnTitle: string;
 }
@@ -51,6 +52,8 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       name: user?.name ? user.name : "",
       username: user?.username ? user.username : "",
       bio: user?.bio ? user.bio : "",
+      github: user?.github ? user.github : "",
+      linkedin: user?.github ? user.github : ""
     },
   });
 
@@ -74,8 +77,10 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       userId: user.id,
       username: values.username,
       name: values.name,
-      bio: values.bio,
       image: values.profile_photo,
+      bio: values.bio,
+      github: values.github,
+      linkedin: values.linkedin,
       path: pathname
     });
 
@@ -182,6 +187,46 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="text-base-semibold text-light-2">
                 Username
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  className="account-form_input no-focus"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="github"
+          render={({ field }) => (
+            <FormItem className="flex w-full flex-col gap-3">
+              <FormLabel className="text-base-semibold text-light-2">
+                GitHub
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  className="account-form_input no-focus"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="linkedin"
+          render={({ field }) => (
+            <FormItem className="flex w-full flex-col gap-3">
+              <FormLabel className="text-base-semibold text-light-2">
+                LinkedIn
               </FormLabel>
               <FormControl>
                 <Input

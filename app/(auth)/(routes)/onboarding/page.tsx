@@ -1,27 +1,25 @@
 import { currentUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
+import { fetchUser } from "@/lib/actions/user.actions";
 import AccountProfile from "@/components/forms/accountprofile";
 
 async function Page() {
   const user = await currentUser();
-  console.log(user);
   if (!user) return null;
 
-  const userInfo = {};
+  const userInfo = await fetchUser(user.id);
+  if (userInfo?.onboarded && !userInfo?.onsetting) redirect("/");
 
   const userData = {
-    id: user?.id,
+    id: user.id,
     objectId: userInfo?._id,
-    username: userInfo?.username || user?.username,
-    name: userInfo.name || user?.firstName || "",
-    bio: userInfo?.bio || "",
-    image:  userInfo?.image || user?.imageUrl,
-    // id: user.id,
-    // objectId: userInfo?._id,
-    // username: userInfo ? userInfo?.username : user.username,
-    // name: userInfo ? userInfo?.name : user.firstName ?? "",
-    // bio: userInfo ? userInfo?.bio : "",
-    // image: userInfo ? userInfo?.image : user.imageUrl,
+    username: userInfo ? userInfo?.username : user.username,
+    name: userInfo ? userInfo?.name : user.firstName ?? "",
+    image: userInfo ? userInfo?.image : user.imageUrl,
+    bio: userInfo ? userInfo?.bio : "",
+    github: userInfo ? userInfo?.github : "",
+    linkedin: userInfo ? userInfo?.linkedin : ""
   };
 
   return (

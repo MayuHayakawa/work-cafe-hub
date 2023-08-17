@@ -22,6 +22,7 @@ import WcIcon from '@mui/icons-material/Wc';
 import PowerIcon from '@mui/icons-material/Power';
 
 import { goodToPost } from "@/lib/actions/post.actions";
+import { ConstructionIcon } from "lucide-react";
 
 interface Props {
   id: string;
@@ -61,8 +62,6 @@ const PostCard = ({
   const postDate = formatWithoutTimezone(createdAt);
   const fallbackImage = "/assets/cafe-stand.svg"
 
-  console.log(good);
-
   function formatWithoutTimezone(date: string) {
     const createdAt = new Date(date);
     const options: Intl.DateTimeFormatOptions = {
@@ -82,10 +81,11 @@ const PostCard = ({
   ) => {
     e.preventDefault();
 
+    // error
     console.log(id);
     console.log(currentUserId);
-
     goodToPost({id:id, currentUserId: currentUserId});
+
   }
 
   return (
@@ -93,7 +93,10 @@ const PostCard = ({
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
+            <Link 
+              href={`/profile/${author.id}`}
+              className="relative h-11 w-11"
+            >
               <Image 
                 src={author.image}
                 alt="Profile image"

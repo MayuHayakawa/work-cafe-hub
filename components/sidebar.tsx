@@ -10,7 +10,6 @@ import { BiLogOut } from "react-icons/bi";
 function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
-
   const { userId } = useAuth();
 
   return (

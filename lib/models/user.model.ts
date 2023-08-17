@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
   },
   image: String,
   bio: String,
+  github: String,
+  linkedin: String,
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +42,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  onsetting: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
