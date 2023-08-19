@@ -6,13 +6,13 @@ import { useEffect, useState } from "react";
 import { MouseEvent } from "react";
 
 interface Props {
+  currentUserId: string,
   accountId: string,
-  authUserId: string,
 }
 
-const FollowButton = ({
+const FollowButton =({
+  currentUserId,
   accountId,
-  authUserId,
 }: Props) => {
   const [ isfollow, setIsfollow ] = useState(false);
 
@@ -20,8 +20,8 @@ const FollowButton = ({
     async function fetchData() {
       try {
         const followStatus = await isFollow({
-          userId: accountId,
-          followId: authUserId,
+          userId: currentUserId,
+          followId: accountId,
         });
         setIsfollow(followStatus);
       } catch(error) {
@@ -29,7 +29,7 @@ const FollowButton = ({
       }
     }
     fetchData();
-  }, [accountId, authUserId]);
+  }, [currentUserId, accountId]);
 
   const handleClick = (
     e: MouseEvent<HTMLInputElement>,
@@ -37,7 +37,7 @@ const FollowButton = ({
     e.preventDefault();
 
     try {
-      followButton({ userId: accountId, followId: authUserId });
+      followButton({ userId: currentUserId, followId: accountId });
       setIsfollow(!isfollow);
     } catch(error) {
       console.error("Error following/unfollowing:", error);

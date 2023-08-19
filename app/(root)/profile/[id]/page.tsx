@@ -13,7 +13,7 @@ import {
   TabsTrigger
 } from "@/components/ui/tabs";
 
-async function Page({ params }: { params: { id: string}}) {
+async function Page({ params }: { params: { id: string }}) {
   const user = await currentUser();
   if(!user) return null;
 
@@ -23,8 +23,8 @@ async function Page({ params }: { params: { id: string}}) {
   return (
     <section>
       <ProfileHeader
-        accountId={userInfo.id}
-        authUserId={user.id}
+        currentUserId={user.id} // the user
+        accountId={userInfo.id} // maybe others
         name={userInfo.name}
         username={userInfo.username}
         imgUrl={userInfo.image}

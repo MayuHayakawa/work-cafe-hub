@@ -9,8 +9,8 @@ import { goSettingProfile } from "@/lib/actions/user.actions";
 import FollowButton from "./followbutton";
 
 interface Props {
+  currentUserId: string,
   accountId: string,
-  authUserId: string,
   name: string,
   username: string,
   imgUrl: string,
@@ -20,8 +20,8 @@ interface Props {
 }
 
 const ProfileHeader = ({
+  currentUserId,
   accountId,
-  authUserId,
   name,
   username,
   imgUrl,
@@ -31,7 +31,6 @@ const ProfileHeader = ({
 }: Props) => {
   const router = useRouter();
 
-  
   const handleClick =(
     e: MouseEvent<HTMLInputElement>,
     ) => {
@@ -40,6 +39,8 @@ const ProfileHeader = ({
       goSettingProfile(accountId); // change onsetting value to true
       router.push('/onboarding');
   }
+
+  console.log(accountId);
 
   return (
     <div className="flex w-full flex-col justify-start">
@@ -67,15 +68,15 @@ const ProfileHeader = ({
               </a>
             </div>
           </div>
-          {accountId === authUserId ? (
+          {currentUserId === accountId ? (
             <div className="absolute top-1 right-1">
               <AiOutlineSetting onClick={(e: any) => handleClick(e)} />
             </div>
           ):(
             <div>
               <FollowButton 
+                currentUserId={currentUserId}
                 accountId={accountId}
-                authUserId={authUserId}
               />
             </div>
           )}

@@ -87,12 +87,8 @@ export async function goodToPost({
   try{
     connectToDB();
 
-    // Check if the user have gooded it, if not, add it to the good list, if so remove it from the list.
     const post = await Post.findById(id);
     const user = await User.findOne({ id: currentUserId }); // Use findOne with the id field
-    // const user1 = await User.findById(currentUserId);
-
-    // console.log(user);
 
     if(!post.good.includes(user?._id)) {
       console.log("add");

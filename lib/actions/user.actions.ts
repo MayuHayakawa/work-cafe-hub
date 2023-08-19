@@ -5,7 +5,6 @@ import { revalidatePath } from 'next/cache';
 
 import User from '../models/user.model';
 import Post from "../models/post.model";
-import { FilterQuery, SortOrder } from "mongoose";
 
 interface Params {
   userId: string,
@@ -28,41 +27,6 @@ export async function fetchUser(userId: string) {
     throw new Error(`Faild to fetch user: ${error.message}`);
   }
 }
-
-// export async function fetchUsers({
-//   userId,
-//   searchString = "",
-//   pageNumber = 1,
-//   pageSize = 20,
-//   sortBy = "desc"
-// } : {
-//   userId: string;
-//   searchString?: string;
-//   pageNumber?: number;
-//   pageSize?: number;
-//   sortBy?: SortOrder;
-// }) {
-//   try {
-//     connectToDB();
-
-//     const skipAmount = (pageNumber - 1) + pageSize;
-
-//     const regex = new RegExp(searchString, "i");
-
-//     const query: FilterQuery<typeof User> = {
-//       id: { $ne: userId }
-//     }
-
-//     if(searchString.trim() !== '') {
-//       query.$or = [
-//         { username: { $regex: regex } },
-//         { name: { $regex: regex } }
-//       ]
-//     }
-//   } catch(error) {
-
-//   }
-// }
 
 // update profile at the first login
 export async function updateUser({
@@ -100,6 +64,7 @@ export async function updateUser({
   }
 }
 
+// change onsetting status to update profile
 export async function goSettingProfile(userId: string){
   try {
     connectToDB();
@@ -116,6 +81,7 @@ export async function goSettingProfile(userId: string){
   }
 }
 
+// update profile
 export async function updateUserFromProfile({
   userId,
   username,
@@ -151,6 +117,7 @@ export async function updateUserFromProfile({
   }
 }
 
+// get user's post
 export async function fetchUserPosts(userId: string) {
   try {
     connectToDB();
@@ -167,22 +134,29 @@ export async function fetchUserPosts(userId: string) {
   }
 }
 
+// get user's follows
 export async function fetchFollows(userId: string) {
   try {
     connectToDB();
 
-    const follows = await User.findOne({id: userId})
-      .populate({
-        path: 'follows',
-        model: User,
-      })
+    const user = await User.findOne({id: userId});
+    const followsArray = user.follows;
 
-      return follows;
+    const followsPromises = followsArray.map(async(followId: any) => {
+      const follow = await User.findById(followId);
+      return follow;
+    });
+
+    const follows = await Promise.all(followsPromises);
+
+    return follows;
+
   } catch(error: any) {
     throw new Error(`Faild to fetch user follows: ${error.message}`)
   }
 }
 
+// check if user follow the other user
 export async function isFollow({
   userId,
   followId,
@@ -203,7 +177,7 @@ export async function isFollow({
   }
 }
 
-
+// update follow status
 export async function followButton({
   userId,
   followId,

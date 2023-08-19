@@ -2,17 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 import { sidebarLinks } from "@/constants";
 
+
 function Bottombar() {
   const pathname = usePathname();
+  const { userId } = useAuth();
 
   return (
     <section className='bottombar'>
       <div className='bottombar_container'>
       {sidebarLinks.map((link) => {
             const isActive = (pathname.includes(link.route) && link.route.length > 1) || pathname === link.route;
+
+            if(link.route === "/favorites") link.route = `${link.route}/${userId}`;
+            if(link.route === "/follows") link.route = `${link.route}/${userId}`;
+            if(link.route === "/profile") link.route = `${link.route}/${userId}`;
             
             return (
               <Link 
