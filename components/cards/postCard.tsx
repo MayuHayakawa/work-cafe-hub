@@ -21,8 +21,17 @@ import WifiIcon from '@mui/icons-material/Wifi';
 import WcIcon from '@mui/icons-material/Wc';
 import PowerIcon from '@mui/icons-material/Power';
 
-import { goodToPost } from "@/lib/actions/post.actions";
-import { ConstructionIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+
+import { deletePost, goodToPost } from "@/lib/actions/post.actions";
+import { MoreVerticalIcon } from "lucide-react";
 
 interface Props {
   id: string;
@@ -76,14 +85,11 @@ const PostCard = ({
     return createdAt.toLocaleDateString('en-US', options);
   }
 
-  const handleClick =(
+  const handleClick = (
     e: MouseEvent<HTMLInputElement>,
   ) => {
     e.preventDefault();
 
-    // error
-    console.log(id);
-    console.log(currentUserId);
     goodToPost({id:id, currentUserId: currentUserId});
 
   }
@@ -106,6 +112,22 @@ const PostCard = ({
             </Link>
           </Avatar>
         }
+        action={ currentUserId === author.id && (
+          <DropdownMenu>
+          <DropdownMenuTrigger>
+            <MoreVerticalIcon />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <AiFillEdit />&nbsp;&nbsp;Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deletePost(id)}>
+              <AiFillDelete />&nbsp;&nbsp;Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        )}
         title={author.name}
         subheader={postDate}
       />

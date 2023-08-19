@@ -64,6 +64,7 @@ export async function fetchUser(userId: string) {
 //   }
 // }
 
+// update profile at the first login
 export async function updateUser({
   userId,
   username,
@@ -150,8 +151,6 @@ export async function updateUserFromProfile({
   }
 }
 
-
-
 export async function fetchUserPosts(userId: string) {
   try {
     connectToDB();
@@ -165,5 +164,75 @@ export async function fetchUserPosts(userId: string) {
       return posts;
   } catch (error: any) {
     throw new Error(`Faild to fetch user posts: ${error.message}`)
+  }
+}
+
+export async function fetchFollows(userId: string) {
+  try {
+    connectToDB();
+
+    const follows = await User.findOne({id: userId})
+      .populate({
+        path: 'follows',
+        model: User,
+      })
+
+      return follows;
+  } catch(error: any) {
+    throw new Error(`Faild to fetch user follows: ${error.message}`)
+  }
+}
+
+export async function isFollow({
+  userId,
+  followId,
+}:{
+  userId: string;
+  followId: string;
+}) {
+  try {
+    connectToDB();
+
+    const user = await User.findOne({id: userId});
+    const follow = await User.findOne({id: followId});
+
+    return !user.follows.includes(follow._id);
+
+  } catch(error: any) {
+    throw new Error(`Error on isfollow : ${error.message}`)
+  }
+}
+
+
+export async function followButton({
+  userId,
+  followId,
+}:{
+  userId: string;
+  followId: string;
+}) {
+  try {
+    connectToDB();
+
+    const user = await User.findOne({id: userId});
+    const follow = await User.findOne({id: followId});
+
+    if(!user.follows.includes(follow._id)) {
+      await User.findByIdAndUpdate(user._id, {
+        $push: { follows: follow._id }
+      });
+      // await User.findByIdAndUpdate(follow._id, {
+      //   $push: { follows: user._id }
+      // });
+    } else {
+      await User.findByIdAndUpdate(user._id, {
+        $pull: { follows: follow._id }
+      });
+      // await User.findByIdAndUpdate(follow._id, {
+      //   $pull: { follows: user._id }
+      // });
+    }
+  } catch(error: any) {
+    throw new Error(`Error on follow button: ${error.message}`)
   }
 }

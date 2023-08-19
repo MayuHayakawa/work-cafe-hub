@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { BiLogoGithub, BiLogoLinkedinSquare } from 'react-icons/bi';
 import { AiOutlineSetting } from 'react-icons/ai';
 import { goSettingProfile } from "@/lib/actions/user.actions";
+import FollowButton from "./followbutton";
 
 interface Props {
   accountId: string,
@@ -36,7 +37,7 @@ const ProfileHeader = ({
     ) => {
       e.preventDefault();
 
-      goSettingProfile(accountId);
+      goSettingProfile(accountId); // change onsetting value to true
       router.push('/onboarding');
   }
 
@@ -66,11 +67,19 @@ const ProfileHeader = ({
               </a>
             </div>
           </div>
-          {accountId === authUserId && (
+          {accountId === authUserId ? (
             <div className="absolute top-1 right-1">
               <AiOutlineSetting onClick={(e: any) => handleClick(e)} />
             </div>
+          ):(
+            <div>
+              <FollowButton 
+                accountId={accountId}
+                authUserId={authUserId}
+              />
+            </div>
           )}
+          
         </div>
       </div>
 

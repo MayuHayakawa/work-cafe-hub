@@ -6,7 +6,7 @@ import { connectToDB } from "../mongoose";
 import Post from "../models/post.model";
 import User from "../models/user.model";
 
-interface CreatePostParams {
+interface Params {
   cafeName: string,
   cafeUrl: string | undefined,
   cafeLocation: string | undefined,
@@ -17,11 +17,6 @@ interface CreatePostParams {
   comment: string | null,
   author: string,
   path: string
-}
-
-interface GoodToPostParams {
-  id: string,
-  currentUserId: string,
 }
 
 export async function fetchPosts(pageNumber = 1, pageSize = 6) {
@@ -55,7 +50,7 @@ export async function createPost({
   comment,
   author,
   path
-}: CreatePostParams) {
+}: Params) {
   try{
     connectToDB();
 
@@ -85,26 +80,34 @@ export async function createPost({
 export async function goodToPost({
   id,
   currentUserId,
-}: GoodToPostParams) {
+}:{
+  id: string,
+  currentUserId: string,
+}) {
   try{
     connectToDB();
 
     // Check if the user have gooded it, if not, add it to the good list, if so remove it from the list.
     const post = await Post.findById(id);
-    const user = await User.findById(currentUserId);
+    const user = await User.findOne({ id: currentUserId }); // Use findOne with the id field
+    // const user1 = await User.findById(currentUserId);
 
-    if(!post.good.includes(currentUserId)) {
+    // console.log(user);
+
+    if(!post.good.includes(user?._id)) {
+      console.log("add");
       await Post.findByIdAndUpdate(id, {
-        $push: { good: user._id }
+        $push: { good: user._id } // Use the _id field of the user document
       });
-      await User.findByIdAndUpdate(currentUserId, {
+      await User.findByIdAndUpdate(user._id, {
         $push: { goods: post._id}
       });
     } else {
+      console.log('remove')
       await Post.findByIdAndUpdate(id, {
         $pull: { good: user._id }
       })
-      await User.findByIdAndUpdate(currentUserId, {
+      await User.findByIdAndUpdate(user._id, {
         $pull: { goods: post._id}
       });
     }
@@ -113,3 +116,13 @@ export async function goodToPost({
   }
 }
 
+export async function deletePost(id: string) {
+  try {
+    connectToDB();
+
+    await Post.findByIdAndDelete(id);
+
+  } catch(error: any) {
+    throw new Error(`Error deleting post: ${error.message}`);
+  }
+}
