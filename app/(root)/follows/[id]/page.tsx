@@ -13,12 +13,9 @@ async function Page({ params }: {params: { id: string }}) {
 
   const follows = await fetchFollows(userInfo.id);
 
-  console.log('followssss: ' + follows);
-
   return (
     <section>
-      {follows.map((follow: any) => {
-        return (
+      {follows.map((follow: any) => (
         <ProfileHeader
           currentUserId={user.id}
           accountId={follow.id}
@@ -29,7 +26,7 @@ async function Page({ params }: {params: { id: string }}) {
           github={follow.github}
           linkedin={follow.linkedin}
         />
-      )})}
+      ))}
     </section>
   )
 }

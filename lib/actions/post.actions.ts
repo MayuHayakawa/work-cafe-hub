@@ -77,6 +77,38 @@ export async function createPost({
   }
 }
 
+export async function deletePost(id: string) {
+  try {
+    connectToDB();
+
+    await Post.findByIdAndDelete(id);
+
+  } catch(error: any) {
+    throw new Error(`Error deleting post: ${error.message}`);
+  }
+}
+
+//  TO DO
+export async function updatePost({
+  cafeName,
+  cafeUrl,
+  cafeLocation,
+  cafeImage,
+  wifi,
+  bathroom,
+  outlet,
+  comment,
+  author,
+  path
+}: Params) {
+  try {
+    connectToDB();
+
+  } catch(error) {
+
+  }
+}
+
 export async function goodToPost({
   id,
   currentUserId,
@@ -109,16 +141,5 @@ export async function goodToPost({
     }
   } catch(error: any) {
     throw new Error(`Error gooding post: ${error.message}`);
-  }
-}
-
-export async function deletePost(id: string) {
-  try {
-    connectToDB();
-
-    await Post.findByIdAndDelete(id);
-
-  } catch(error: any) {
-    throw new Error(`Error deleting post: ${error.message}`);
   }
 }

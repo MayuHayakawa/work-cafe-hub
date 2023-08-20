@@ -11,7 +11,7 @@ interface Props {
 const PostsTab = async ({ currentUserId, accountId, accountType }:
   Props) => {
   let result = await fetchUserPosts(accountId);
-  console.log(result);
+  // console.log(result);
   if(!result) redirect('/')
 
   return (

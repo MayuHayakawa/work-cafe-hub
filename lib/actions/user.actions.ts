@@ -28,6 +28,17 @@ export async function fetchUser(userId: string) {
   }
 }
 
+export async function fetchUserById(userId: string) {
+  try {
+    connectToDB();
+
+    return await User.findById(userId);
+
+  } catch(error: any) {
+    throw new Error(`Faild to fetch user: ${error.message}`);
+  }
+}
+
 // update profile at the first login
 export async function updateUser({
   userId,
@@ -208,5 +219,26 @@ export async function followButton({
     }
   } catch(error: any) {
     throw new Error(`Error on follow button: ${error.message}`)
+  }
+}
+
+// get user's good posts
+export async function fetchGoodPosts(userId: string) {
+  try{
+    connectToDB();
+
+    const user = await User.findOne({id: userId});
+    const goodArray = user.goods;
+
+    const goodsPromises = goodArray.map(async(postId: any) => {
+      const post = await Post.findById(postId);
+      return post;
+    });
+
+    const posts = await Promise.all(goodsPromises);
+
+    return posts;
+  } catch(error: any) {
+    throw new Error(`Faild to fetch good posts: ${error.message}`)
   }
 }

@@ -71,6 +71,8 @@ const PostCard = ({
   const postDate = formatWithoutTimezone(createdAt);
   const fallbackImage = "/assets/cafe-stand.svg"
 
+  console.log('aaaaa: ' + author);
+
   function formatWithoutTimezone(date: string) {
     const createdAt = new Date(date);
     const options: Intl.DateTimeFormatOptions = {
