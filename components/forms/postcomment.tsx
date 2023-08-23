@@ -20,17 +20,24 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "../ui/textarea";
 
 import { PostValidation } from "@/lib/validations/post";
-import { createPost } from "@/lib/actions/post.actions";
+import { createPost, updatePost } from "@/lib/actions/post.actions";
 import { ChangeEvent, useState } from "react";
 import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
+import Post from "@/lib/models/post.model";
 
 interface Props {
   userId: string;
+  isEdit: boolean;
+  // postInfo?: typeof Post;
+  postInfo?: any;
 }
 
-
-function PostComment({ userId }: Props) {
+function PostComment({
+  userId,
+  isEdit,
+  postInfo
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const { startUpload } = useUploadThing("media");
@@ -40,15 +47,24 @@ function PostComment({ userId }: Props) {
   const form = useForm({
     resolver: zodResolver(PostValidation),
     defaultValues: {
-      cafeName: '',
-      cafeUrl: '',
-      cafeLocation: '',
-      cafeImage: '',
-      wifi: '', // free or password or non
-      bathroom: '',
-      outlet: '', // true or false
-      comment: '',
+      cafeName: isEdit ? postInfo?.cafeName : '',
+      cafeUrl: isEdit ? postInfo?.cafeUrl : '',
+      cafeLocation: isEdit ? postInfo?.cafeLocation : '',
+      cafeImage: isEdit ? postInfo?.cafeImage : '',
+      wifi: isEdit ? postInfo?.wifi : '', // free or password or non
+      bathroom: isEdit ? postInfo?.bathroom : '',
+      outlet: isEdit ? postInfo?.outlet : '', // true or false
+      comment: isEdit ? postInfo?.comment : '',
       accountId: userId,
+      // cafeName: isEdit ? postInfo?.cafeName : '',
+      // cafeUrl: isEdit ? postInfo?.cafeUrl : '',
+      // cafeLocation: isEdit ? postInfo?.cafeLocation : '',
+      // cafeImage: isEdit ? postInfo?.cafeImage : '',
+      // wifi: isEdit ? postInfo?.wifi : '', // free or password or non
+      // bathroom: isEdit ? postInfo?.bathroom : '',
+      // outlet: isEdit ? postInfo?.outlet : '', // true or false
+      // comment: isEdit ? postInfo?.comment : '',
+      // accountId: userId,
     },
   })
 
@@ -70,18 +86,34 @@ function PostComment({ userId }: Props) {
       }
     }
 
-    await createPost({
-      cafeName: values.cafeName,
-      cafeUrl: values.cafeUrl,
-      cafeLocation: values.cafeLocation,
-      cafeImage: values.cafeImage,
-      wifi: values.wifi,
-      bathroom: values.bathroom,
-      outlet: values.outlet,
-      comment: values.comment,
-      author: userId,
-      path: pathname
-    });
+    if(isEdit) {
+      await updatePost({
+        id: postInfo._id,
+        cafeName: values.cafeName,
+        cafeUrl: values.cafeUrl,
+        cafeLocation: values.cafeLocation,
+        cafeImage: values.cafeImage,
+        wifi: values.wifi,
+        bathroom: values.bathroom,
+        outlet: values.outlet,
+        comment: values.comment,
+        author: userId,
+        path: pathname
+      });
+    } else {
+      await createPost({
+        cafeName: values.cafeName,
+        cafeUrl: values.cafeUrl,
+        cafeLocation: values.cafeLocation,
+        cafeImage: values.cafeImage,
+        wifi: values.wifi,
+        bathroom: values.bathroom,
+        outlet: values.outlet,
+        comment: values.comment,
+        author: userId,
+        path: pathname
+      });
+    }
 
     router.push("/");
   }

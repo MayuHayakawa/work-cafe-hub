@@ -40,8 +40,6 @@ const ProfileHeader = ({
       router.push('/onboarding');
   }
 
-  console.log(accountId);
-
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="flex items-center justify-between relative">
@@ -60,7 +58,7 @@ const ProfileHeader = ({
             <h2 className="text-left font-bold">{name}</h2>
             <p className="text-sm text-gray-500">@{username}</p>
             <div className="flex gap-3 mt-1">
-              <a href={github} target="_blank">
+              <a href={github} target="_blank" className="text-2xl">
                 <BiLogoGithub />
               </a>
               <a href={linkedin} target="_blank">

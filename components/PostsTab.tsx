@@ -11,7 +11,6 @@ interface Props {
 const PostsTab = async ({ currentUserId, accountId, accountType }:
   Props) => {
   let result = await fetchUserPosts(accountId);
-  // console.log(result);
   if(!result) redirect('/')
 
   return (
@@ -31,8 +30,8 @@ const PostsTab = async ({ currentUserId, accountId, accountType }:
           comment={post.comment}
           author={
             accountType === 'User'
-              ? { name: result.name, image: result.image, id: result.id }
-              : { name: post.author.name, image: post.author.image, id: post.author.id }
+              ? { name: result.name, image: result.image, id: result.id, objectId: result._id }
+              : { name: post.author.name, image: post.author.image, id: post.author.id, objectId: post.author._id }
           }
           good={post.good}
           createdAt={post.createdAt}

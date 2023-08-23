@@ -1,10 +1,19 @@
-import PostCard from "@/components/cards/postCard";
-import { fetchPosts } from "@/lib/actions/post.actions";
 import { currentUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
+
+import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchPosts } from "@/lib/actions/post.actions";
+
+import PostCard from "@/components/cards/postCard";
 
 export default async function Home() {
   const result = await fetchPosts(1, 10);
+
   const user = await currentUser();
+  if(!user) return null;
+
+  const userInfo = await fetchUser(user.id);
+  if(!userInfo?.onboarded) redirect('/onboarding');
 
   return (
     <>
@@ -21,7 +30,7 @@ export default async function Home() {
               <PostCard 
                 key={post._id}
                 id={post._id}
-                currentUserId={user?.id || ''}
+                currentUserId={userInfo._id}
                 cafeName={post.cafeName}
                 cafeUrl={post.cafeUrl}
                 cafeLocation={post.cafeLocation}
@@ -33,7 +42,8 @@ export default async function Home() {
                 author={{
                   name: post.author.name,
                   image: post.author.image,
-                  id: post.author.id
+                  id: post.author.id,
+                  objectId: post.author._id
                 }}
                 good={post.good}
                 createdAt={post.createdAt}

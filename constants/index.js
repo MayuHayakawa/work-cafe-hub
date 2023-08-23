@@ -9,11 +9,11 @@ export const sidebarLinks = [
     label: "Home",
     icon: <BiHomeAlt />,
   },
-  {
-    route: "/search",
-    label: "Search",
-    icon: <BiSearchAlt />,
-  },
+  // {
+  //   route: "/search",
+  //   label: "Search",
+  //   icon: <BiSearchAlt />,
+  // },
   {
     route: "/favorites",
     label: "Favorites",

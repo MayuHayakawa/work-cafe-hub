@@ -150,7 +150,7 @@ export async function fetchFollows(userId: string) {
   try {
     connectToDB();
 
-    const user = await User.findOne({id: userId});
+    const user = await User.findById(userId);
     const followsArray = user.follows;
 
     const followsPromises = followsArray.map(async(followId: any) => {
@@ -227,7 +227,7 @@ export async function fetchGoodPosts(userId: string) {
   try{
     connectToDB();
 
-    const user = await User.findOne({id: userId});
+    const user = await User.findById(userId);
     const goodArray = user.goods;
 
     const goodsPromises = goodArray.map(async(postId: any) => {

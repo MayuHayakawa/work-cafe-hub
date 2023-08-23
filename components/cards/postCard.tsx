@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MouseEvent } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 
 import * as React from 'react';
 import Card from '@mui/material/Card';
@@ -48,14 +48,15 @@ interface Props {
     name: string;
     image: string;
     id: string;
+    objectId: string;
   }
-  good: []
+  good: string[];
   createdAt: string;
 }
 
 const PostCard = ({
   id,
-  currentUserId,
+  currentUserId, //object id
   cafeName,
   cafeUrl,
   cafeLocation,
@@ -69,9 +70,16 @@ const PostCard = ({
   createdAt
 }: Props) => {
   const postDate = formatWithoutTimezone(createdAt);
-  const fallbackImage = "/assets/cafe-stand.svg"
+  const fallbackImage = "/assets/cafe-stand.svg";
 
-  console.log('aaaaa: ' + author);
+  const [isGood, setIsGood] = useState(false);
+
+  useEffect(() => {
+    if(good.includes(currentUserId)) {
+      setIsGood(true);
+    }
+  },[]);
+
 
   function formatWithoutTimezone(date: string) {
     const createdAt = new Date(date);
@@ -87,13 +95,22 @@ const PostCard = ({
     return createdAt.toLocaleDateString('en-US', options);
   }
 
+  function copyToClipboard(text: any) {
+    const textField = document.createElement('textarea');
+    textField.innerText = text;
+    document.body.appendChild(textField);
+    textField.select();
+    document.execCommand('copy');
+    textField.remove();
+  }
+
   const handleClick = (
     e: MouseEvent<HTMLInputElement>,
   ) => {
     e.preventDefault();
 
     goodToPost({id:id, currentUserId: currentUserId});
-
+    setIsGood(!isGood);
   }
 
   return (
@@ -114,16 +131,24 @@ const PostCard = ({
             </Link>
           </Avatar>
         }
-        action={ currentUserId === author.id && (
+        action={ currentUserId === author.objectId && (
           <DropdownMenu>
           <DropdownMenuTrigger>
             <MoreVerticalIcon />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>
-              <AiFillEdit />&nbsp;&nbsp;Edit
+              <Link 
+                href={`/edit-post/${id}`}
+                className="flex"
+              >
+                <AiFillEdit />&nbsp;&nbsp;Edit
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deletePost(id)}>
+            <DropdownMenuItem
+              onClick={() => deletePost({id, currentUserId})}
+              className="cursor-pointer"
+            >
               <AiFillDelete />&nbsp;&nbsp;Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -141,6 +166,7 @@ const PostCard = ({
       />
       <CardContent>
         <h2>{cafeName}</h2>
+        <h5 className="text-sm">{cafeLocation}</h5>
         <Typography variant="body2" color="text.secondary">
           {comment}
         </Typography>
@@ -159,10 +185,8 @@ const PostCard = ({
             </IconButton>
           )}
           {cafeLocation != '' ? (
-            <IconButton>
-              <Link href={cafeLocation}>
-                <MapIcon color="primary" />
-              </Link>
+            <IconButton onClick={() => copyToClipboard(cafeLocation)}>
+              <MapIcon color="primary" />
             </IconButton>
           ):(
             <IconButton>
@@ -186,7 +210,9 @@ const PostCard = ({
             aria-label="add to favorites"
             onClick={(e: any) => handleClick(e)}
           >
-            <FavoriteIcon />
+            <FavoriteIcon 
+              className={ isGood ? `text-red-500` : ``}
+            />
             <p>{good.length != 0 ? `${good.length}` : ''}</p>
           </IconButton>
         </div>

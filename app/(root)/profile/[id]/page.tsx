@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchGoodPosts, fetchUser, fetchUserById } from "@/lib/actions/user.actions";
 import ProfileHeader from "@/components/profileHeader";
 import { profileTabs } from "@/constants";
 import PostsTab from "@/components/PostsTab";
@@ -12,6 +12,7 @@ import {
   TabsList,
   TabsTrigger
 } from "@/components/ui/tabs";
+import PostCard from "@/components/cards/postCard";
 
 async function Page({ params }: { params: { id: string }}) {
   const user = await currentUser();
@@ -19,6 +20,8 @@ async function Page({ params }: { params: { id: string }}) {
 
   const userInfo = await fetchUser(params.id);
   if(!userInfo?.onboarded) redirect('/onboarding');
+
+  const goodPosts = await fetchGoodPosts(userInfo._id);
 
   return (
     <section>
@@ -42,6 +45,9 @@ async function Page({ params }: { params: { id: string }}) {
                 {tab.label === 'Posts' && (
                   <p className="ml-1 rounded-sm bg-primary-500 px-2 py-1 ">{userInfo?.posts?.length}</p>
                 )}
+                {tab.label === 'Likes' && (
+                  <p className="ml-1 rounded-sm bg-primary-500 px-2 py-1 ">{goodPosts?.length}</p>
+                )}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -49,19 +55,49 @@ async function Page({ params }: { params: { id: string }}) {
             <TabsContent key={`content-${tab.label}`} value={tab.value} className="w-full">
               {tab.label === 'Posts' && (
                 <PostsTab
-                  currentUserId={user.id}
+                  currentUserId={userInfo._id}
+                  // currentUserId={user.id}
                   accountId={userInfo.id}
                   accountType="User"
                 />
               )}
-              {/* show likes post */}
-              {/* {tab.label === 'Likes' && (
-                <PostsTab
-                  currentUserId={user.id}
-                  accountId={userInfo.id}
-                  accountType="User"
-                />
-              )} */}
+              {tab.label === 'Likes' && (
+                <>
+                  { goodPosts.length != 0 ? (
+                    <>
+                      {goodPosts.map(async (post: any) => {
+                        const postAuthor = await fetchUserById(post.author._id);
+                        return (
+                          <PostCard
+                            key={post._id}
+                            id={post._id}
+                            currentUserId={userInfo._id}
+                            // currentUserId={user.id}
+                            cafeName={post.cafeName}
+                            cafeUrl={post.cafeUrl}
+                            cafeLocation={post.cafeLocation}
+                            cafeImage={post.cafeImage}
+                            wifi={post.wifi}
+                            bathroom={post.bathroom}
+                            outlet={post.outlet}
+                            comment={post.comment}
+                            author={{
+                              name: postAuthor.name,
+                              image: postAuthor.image,
+                              id: postAuthor.id,
+                              objectId: postAuthor._id,
+                            }}
+                            good={post.good}
+                            createdAt={post.createdAt}
+                          />
+                        )})
+                      }
+                    </>
+                  ):(
+                    <h1>No Post</h1>
+                  )}
+                </>
+              )}
             </TabsContent>
           ))}
         </Tabs>

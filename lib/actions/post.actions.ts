@@ -7,6 +7,7 @@ import Post from "../models/post.model";
 import User from "../models/user.model";
 
 interface Params {
+  id?: string,
   cafeName: string,
   cafeUrl: string | undefined,
   cafeLocation: string | undefined,
@@ -37,6 +38,17 @@ export async function fetchPosts(pageNumber = 1, pageSize = 6) {
   const isNext = totalPostCount > skipAmount + posts.length;
 
   return { posts, isNext }
+}
+
+export async function fetchPost(id: string) {
+  try {
+    connectToDB();
+
+    return await Post.findById(id);
+
+  } catch(error: any) {
+    throw new Error(`Error fetching post: ${error.message}`);
+  }
 }
 
 export async function createPost({
@@ -77,19 +89,29 @@ export async function createPost({
   }
 }
 
-export async function deletePost(id: string) {
+export async function deletePost({
+  id,
+  currentUserId
+}:{
+  id: string,
+  currentUserId: string
+}) {
   try {
     connectToDB();
 
     await Post.findByIdAndDelete(id);
+
+    await User.findByIdAndUpdate(currentUserId, {
+      $pull: { posts: id }
+    });
 
   } catch(error: any) {
     throw new Error(`Error deleting post: ${error.message}`);
   }
 }
 
-//  TO DO
 export async function updatePost({
+  id,
   cafeName,
   cafeUrl,
   cafeLocation,
@@ -104,8 +126,25 @@ export async function updatePost({
   try {
     connectToDB();
 
-  } catch(error) {
+    await Post.findByIdAndUpdate(
+      id,
+      {
+        cafeName,
+        cafeUrl,
+        cafeLocation,
+        cafeImage,
+        wifi,
+        bathroom,
+        outlet,
+        comment,
+        author,
+        path
+      },
+      { upsert: true }
+    );
 
+  } catch(error: any) {
+    throw new Error(`Failed to update post: ${error.message}`)
   }
 }
 
@@ -120,23 +159,23 @@ export async function goodToPost({
     connectToDB();
 
     const post = await Post.findById(id);
-    const user = await User.findOne({ id: currentUserId }); // Use findOne with the id field
+    // const user = await User.findById(currentUserId);
 
-    if(!post.good.includes(user?._id)) {
+    if(!post.good.includes(currentUserId)) {
       console.log("add");
       await Post.findByIdAndUpdate(id, {
-        $push: { good: user._id } // Use the _id field of the user document
+        $push: { good: currentUserId } // Use the _id field of the user document
       });
-      await User.findByIdAndUpdate(user._id, {
-        $push: { goods: post._id}
+      await User.findByIdAndUpdate(currentUserId, {
+        $push: { goods: id}
       });
     } else {
       console.log('remove')
       await Post.findByIdAndUpdate(id, {
-        $pull: { good: user._id }
+        $pull: { good: currentUserId }
       })
-      await User.findByIdAndUpdate(user._id, {
-        $pull: { goods: post._id}
+      await User.findByIdAndUpdate(currentUserId, {
+        $pull: { goods: id}
       });
     }
   } catch(error: any) {

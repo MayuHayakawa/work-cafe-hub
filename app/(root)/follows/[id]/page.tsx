@@ -11,7 +11,8 @@ async function Page({ params }: {params: { id: string }}) {
   const userInfo = await fetchUser(params.id);
   if(!userInfo?.onboarded) redirect('/onboarding');
 
-  const follows = await fetchFollows(userInfo.id);
+  const follows = await fetchFollows(userInfo._id);
+  // const follows = await fetchFollows(userInfo.id);
 
   return (
     <section>
